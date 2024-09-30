@@ -7,62 +7,62 @@ const readline = require('node:readline');
 // 3. parses csv file for true delimiters and true newlines (calls parseCSV)
 // 4. prints a formatted version (table-like) to the node console (calls printFormattedData)
 
-function printFormattedData(parsedData) {
-    if (parsedData.length === 0) return;
+// function printFormattedData(parsedData) {
+//     if (parsedData.length === 0) return;
 
-    // used as a limiter for table size
-    // will print an error if table is bigger than certain size
-    const MAX_ROW_LENGTH = 130; 
-    const CELL_PADDING = 2; 
-    const PIPE_CHARS = 2; 
+//     // used as a limiter for table size
+//     // will print an error if table is bigger than certain size
+//     const MAX_ROW_LENGTH = 130; 
+//     const CELL_PADDING = 2; 
+//     const PIPE_CHARS = 2; 
 
-    // calculate column widths and check total row length
-    let columnWidths = [];
-    let isTooLong = false;
+//     // calculate column widths and check total row length
+//     let columnWidths = [];
+//     let isTooLong = false;
 
-    parsedData.forEach(row => {
-        let rowLength = PIPE_CHARS; 
-        row.forEach((cell, index) => {
-            const cellStr = String(cell);
-            columnWidths[index] = Math.max(columnWidths[index] || 0, cellStr.length);
-            rowLength += cellStr.length + CELL_PADDING;
-        });
-        rowLength += (row.length - 1) * 3; // add length for ' | ' between cells
+//     parsedData.forEach(row => {
+//         let rowLength = PIPE_CHARS; 
+//         row.forEach((cell, index) => {
+//             const cellStr = String(cell);
+//             columnWidths[index] = Math.max(columnWidths[index] || 0, cellStr.length);
+//             rowLength += cellStr.length + CELL_PADDING;
+//         });
+//         rowLength += (row.length - 1) * 3; // add length for ' | ' between cells
 
-        if (rowLength > MAX_ROW_LENGTH) {
-            isTooLong = true;
-        }
-    });
+//         if (rowLength > MAX_ROW_LENGTH) {
+//             isTooLong = true;
+//         }
+//     });
 
-    if (isTooLong) {
-        console.log("Warning: CSV file may be too long for proper display!");
-        return;
-    }
+//     if (isTooLong) {
+//         console.log("Warning: CSV file may be too long for proper display!");
+//         return;
+//     }
 
-    let paddedData = parsedData.map(row =>
-        row.map((cell, index) => String(cell).padEnd(columnWidths[index]))
-    );
+//     let paddedData = parsedData.map(row =>
+//         row.map((cell, index) => String(cell).padEnd(columnWidths[index]))
+//     );
 
-    const printRow = row => {
-        let formattedRow = row.join(' | ');
-        console.log('| ' + formattedRow + ' |');
-    }
+//     const printRow = row => {
+//         let formattedRow = row.join(' | ');
+//         console.log('| ' + formattedRow + ' |');
+//     }
 
-    // print top border
-    console.log('+' + columnWidths.map(width => '-'.repeat(width + 2)).join('+') + '+');
+//     // print top border
+//     console.log('+' + columnWidths.map(width => '-'.repeat(width + 2)).join('+') + '+');
 
-    // print rows
-    paddedData.forEach((row, index) => {
-        printRow(row);
-        // print separator after header
-        if (index === 0) {
-            console.log('+' + columnWidths.map(width => '-'.repeat(width + 2)).join('+') + '+');
-        }
-    });
+//     // print rows
+//     paddedData.forEach((row, index) => {
+//         printRow(row);
+//         // print separator after header
+//         if (index === 0) {
+//             console.log('+' + columnWidths.map(width => '-'.repeat(width + 2)).join('+') + '+');
+//         }
+//     });
 
-    // print bottom border
-    console.log('+' + columnWidths.map(width => '-'.repeat(width + 2)).join('+') + '+');
-}
+//     // print bottom border
+//     console.log('+' + columnWidths.map(width => '-'.repeat(width + 2)).join('+') + '+');
+// }
 
 function parseCSV(data, delimiter, newline) {
     let output = [];
@@ -134,7 +134,7 @@ function readCSV(file) {
             }
 
             let parsedData = parseCSV(data, ',', '\n');
-            printFormattedData(parsedData);
+            // printFormattedData(parsedData);
             resolve();
         });
     })
@@ -172,6 +172,14 @@ async function main() {
         }
         // blank line for 
         console.log('\n');
+
+        const spreadEquation = await promptForFilePath("Enter Spreadsheet Formula: ");
+
+        if (spreadEquation.toLowerCase() === 'exit') {
+            console.log('Exiting program.');
+            break;
+        }
+        
     }
 }
 
@@ -183,5 +191,5 @@ module.exports = {
     promptForFilePath,
     readCSV,
     parseCSV,
-    printFormattedData,
+    // printFormattedData,
 };
