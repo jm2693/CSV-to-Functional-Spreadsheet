@@ -193,7 +193,7 @@ class Spreadsheet {
 
 let spreadsheet = new Spreadsheet();
 
-function sumFunction(start, end) {
+function sumFunction(spreadsheet, start, end) {
     const range = spreadsheet.getCellRange(start, end);
     const sum = range.reduce((sum, value) => {
         if (sum === null || value === null || isNaN(value)) return null;
@@ -202,7 +202,7 @@ function sumFunction(start, end) {
     return sum === null ? "Not Applicable" : sum;
 }
 
-function avgFunction(start, end) {
+function avgFunction(spreadsheet, start, end) {
     const range = spreadsheet.getCellRange(start, end);
     const sum = range.reduce((sum, value) => {
         if (sum === null || value === null || isNaN(value)) return null;
@@ -213,19 +213,19 @@ function avgFunction(start, end) {
     return validNumbers === 0 ? "Not Applicable" : sum / validNumbers;
 }
 
-function minFunction(start, end) {
+function minFunction(spreadsheet, start, end) {
     const range = spreadsheet.getCellRange(start, end);
     const validNumbers = range.filter(value => value !== null && !isNaN(value));
     return validNumbers.length === 0 ? "Not Applicable" : Math.min(...validNumbers);
 }
 
-function maxFunction(start, end) {
+function maxFunction(spreadsheet, start, end) {
     const range = spreadsheet.getCellRange(start, end);
     const validNumbers = range.filter(value => value !== null && !isNaN(value));
     return validNumbers.length === 0 ? "Not Applicable" : Math.max(...validNumbers);
 }
 
-function calcFormula(formula) {
+function calcFormula(spreadsheet, formula) {
     let calc, range = []
     if (formula.startsWith('=')) {
         calc = formula.split('=').pop().split('(')[0].toUpperCase();
@@ -234,14 +234,14 @@ function calcFormula(formula) {
 
     switch (calc) {
         case "SUM":
-            return sumFunction(range[0], range[1]);
+            return sumFunction(spreadsheet, range[0], range[1]);
         case "AVG":
         case "AVERAGE":
-            return avgFunction(range[0], range[1]);
+            return avgFunction(spreadsheet, range[0], range[1]);
         case "MIN":
-            return minFunction(range[0], range[1]);
+            return minFunction(spreadsheet, range[0], range[1]);
         case "MAX":
-            return maxFunction(range[0], range[1]);
+            return maxFunction(spreadsheet, range[0], range[1]);
         default:
             throw new Error('Unsupported Formula!');
     }
@@ -266,26 +266,27 @@ async function main() {
         // blank line for 
         console.log('\n');
 
-        while (true) {
-            const input = await promptForFilePath("Enter Spreadsheet Formula (or 'back' to load a new CSV): ");
-            const spreadEquation = input.toUpperCase()
+        
+while (true) {
+    const input = await promptForFilePath("Enter Spreadsheet Formula (or 'back' to load a new CSV): ");
+    const spreadEquation = input.toUpperCase()
 
-            if (spreadEquation.toLowerCase() === 'back') {
-                break;
-            }
+    if (spreadEquation.toLowerCase() === 'back') {
+        break;
+    }
 
-            if (spreadEquation.toLowerCase() === 'exit') {
-                console.log('Exiting program.');
-                return;
-            }
+    if (spreadEquation.toLowerCase() === 'exit') {
+        console.log('Exiting program.');
+        return;
+    }
 
-            try {
-                const result = calcFormula(spreadEquation);
-                console.log(`Result: ${result}`);
-            } catch (error) {
-                console.error(`Error: ${error.message}`);
-            }
-        }
+    try {
+        const result = calcFormula(spreadsheet, spreadEquation);
+        console.log(`Result: ${result}`);
+    } catch (error) {
+        console.error(`Error: ${error.message}`);
+    }
+}
     }
 }
 
@@ -301,5 +302,7 @@ module.exports = {
     avgFunction,
     sumFunction,
     minFunction,
-    maxFunction
+    maxFunction,
+    calcFormula,
+    Spreadsheet
 };
