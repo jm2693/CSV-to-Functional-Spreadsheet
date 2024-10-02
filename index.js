@@ -147,39 +147,6 @@ function readCSV(file) {
     })
 }
 
-class Spreadsheet {
-    constructor() {
-        this.data = new Map();
-    }
-    setCellValue(key, value) {
-        this.data.set(key, value);
-    }
-    // if a cell is non-existent assume its value is null
-    getCellValue(key) {
-        return this.data.get(key) || 0;
-    }
-    getCellRange(start, end) {
-        // columns get the letter
-        // rows get the number
-        const startCol = start.charAt(0);
-        const endCol = end.charAt(0);
-        const startRow = parseInt(start.slice(1));
-        const endRow = parseInt(end.slice(1));
-
-        const range = [];
-
-        // turn letters into unicode to find range
-        // acts as 2D array, adding each element to rangedOutput
-        for (let col = startCol.charCodeAt(0); col <= endCol.charCodeAt(0); col++) {
-            for (let row = startRow; row <= endRow; row++) {
-                const cellKey = String.fromCharCode(col) + row;
-                range.push(this.getCellValue(cellKey));
-            }
-        }
-        return range;
-    }
-}
-
 // function to prompt user if no CLA was given
 function promptForFilePath(question) {
     const rl = readline.createInterface({
@@ -195,29 +162,67 @@ function promptForFilePath(question) {
     }));
 }
 
+class Spreadsheet {
+    constructor() {
+        this.data = new Map();
+    }
+    setCellValue(key, value) {
+        this.data.set(key, value);
+    }
+    // if a cell is non-existent assume its value is null
+    getCellValue(key) {
+        return this.data.has(key) ? this.data.get(key) : null;
+    }
+    getCellRange(start, end) {
+        const startCol = start.charAt(0);
+        const endCol = end.charAt(0);
+        const startRow = parseInt(start.slice(1));
+        const endRow = parseInt(end.slice(1));
 
+        const range = [];
+
+        for (let col = startCol.charCodeAt(0); col <= endCol.charCodeAt(0); col++) {
+            for (let row = startRow; row <= endRow; row++) {
+                const cellKey = String.fromCharCode(col) + row;
+                range.push(this.getCellValue(cellKey));
+            }
+        }
+        return range;
+    }
+}
 
 let spreadsheet = new Spreadsheet();
 
 function sumFormula(start, end) {
     const range = spreadsheet.getCellRange(start, end);
-    return range.reduce((sum, value) => sum + value, null);
+    const sum = range.reduce((sum, value) => {
+        if (sum === null || value === null || isNaN(value)) return null;
+        return sum + Number(value);
+    }, 0);
+    return sum === null ? "Not Applicable" : sum;
 }
 
 function avgFunction(start, end) {
     const range = spreadsheet.getCellRange(start, end);
-    const sum = sumFormula(start, end);
-    return sum / range.length;
+    const sum = range.reduce((sum, value) => {
+        if (sum === null || value === null || isNaN(value)) return null;
+        return sum + Number(value);
+    }, 0);
+    if (sum === null) return "Not Applicable";
+    const validNumbers = range.filter(value => value !== null && !isNaN(value)).length;
+    return validNumbers === 0 ? "Not Applicable" : sum / validNumbers;
 }
 
 function minFunction(start, end) {
     const range = spreadsheet.getCellRange(start, end);
-    return Math.min(...range);
+    const validNumbers = range.filter(value => value !== null && !isNaN(value));
+    return validNumbers.length === 0 ? "Not Applicable" : Math.min(...validNumbers);
 }
 
 function maxFunction(start, end) {
     const range = spreadsheet.getCellRange(start, end);
-    return Math.max(...range);
+    const validNumbers = range.filter(value => value !== null && !isNaN(value));
+    return validNumbers.length === 0 ? "Not Applicable" : Math.max(...validNumbers);
 }
 
 function calcFormula(formula) {
@@ -229,17 +234,16 @@ function calcFormula(formula) {
 
     switch (calc) {
         case "SUM":
-            return sumFormula(range[0], range[1])
+            return sumFormula(range[0], range[1]);
         case "AVG":
         case "AVERAGE":
-            return avgFunction(range[0], range[1])
+            return avgFunction(range[0], range[1]);
         case "MIN":
-            return minFunction(range[0], range[1])
-            break;
+            return minFunction(range[0], range[1]);
         case "MAX":
-            return maxFunction(range[0], range[1])
+            return maxFunction(range[0], range[1]);
         default:
-            throw new Error('Unsupported Formula!')
+            throw new Error('Unsupported Formula!');
     }
 }
 
@@ -257,6 +261,7 @@ async function main() {
             await readCSV(filePath);
         } catch (error) {
             console.error(error.message);
+            continue;
         }
         // blank line for 
         console.log('\n');
