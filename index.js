@@ -193,7 +193,7 @@ class Spreadsheet {
 
 let spreadsheet = new Spreadsheet();
 
-function sumFormula(start, end) {
+function sumFunction(start, end) {
     const range = spreadsheet.getCellRange(start, end);
     const sum = range.reduce((sum, value) => {
         if (sum === null || value === null || isNaN(value)) return null;
@@ -234,7 +234,7 @@ function calcFormula(formula) {
 
     switch (calc) {
         case "SUM":
-            return sumFormula(range[0], range[1]);
+            return sumFunction(range[0], range[1]);
         case "AVG":
         case "AVERAGE":
             return avgFunction(range[0], range[1]);
@@ -297,5 +297,9 @@ module.exports = {
     promptForFilePath,
     readCSV,
     parseCSV,
-    // printFormattedData,
+    printFormattedData,
+    avgFunction,
+    sumFunction,
+    minFunction,
+    maxFunction
 };
