@@ -183,6 +183,8 @@ class Spreadsheet {
     }
 }
 
+let spreadsheet = new Spreadsheet();
+
 function sumFormula(start, end) {
     const range = spreadsheet.getCellRange(start, end);
     return range.reduce((sum, value) => sum + value, null);
@@ -195,11 +197,17 @@ function avgFunction(start, end) {
 }
 
 function minFunction(start, end) {
-
+    const range = spreadsheet.getCellRange(start, end);
+    return Math.min(...range);
 }
 
-function calcFormula(formula, callback) {
+function maxFunction(start, end) {
+    const range = spreadsheet.getCellRange(start, end);
+    return Math.max(...range);
+}
 
+function calcFormula(formula) {
+    
 }
 
 class Spreadsheet {
@@ -233,8 +241,6 @@ class Spreadsheet {
     }
 }
 
-// Global spreadsheet instance
-const spreadsheet = new Spreadsheet();
 
 function sumFormula(start, end) {
     const range = spreadsheet.getCellRange(start, end);
