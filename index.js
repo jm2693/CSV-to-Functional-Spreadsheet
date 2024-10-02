@@ -207,84 +207,12 @@ function maxFunction(start, end) {
 }
 
 function calcFormula(formula) {
-    
-}
-
-class Spreadsheet {
-    constructor() {
-        this.data = new Map();
-    }
-
-    setCellValue(key, value) {
-        this.data.set(key, value);
-    }
-
-    // if a cell is non-existent assume its value is null
-    getCellValue(key) {
-        return this.data.get(key) || 0;
-    }
-
-    getCellRange(start, end) {
-        const startCol = start.charAt(0);
-        const endCol = end.charAt(0);
-        const startRow = parseInt(start.slice(1));
-        const endRow = parseInt(end.slice(1));
-
-        const range = [];
-        for (let col = startCol.charCodeAt(0); col <= endCol.charCodeAt(0); col++) {
-            for (let row = startRow; row <= endRow; row++) {
-                const cellKey = String.fromCharCode(col) + row;
-                range.push(this.getCellValue(cellKey));
-            }
-        }
-        return range;
-    }
-}
-
-
-function sumFormula(start, end) {
-    const range = spreadsheet.getCellRange(start, end);
-    return range.reduce((sum, value) => sum + value, null);
-}
-
-function avgFunction(start, end) {
-    const range = spreadsheet.getCellRange(start, end);
-    const sum = sumFormula(start, end);
-    return sum / range.length;
-}
-
-function minFunction(start, end) {
-    const range = spreadsheet.getCellRange(start, end);
-    return Math.min(...range);
-}
-
-function maxFunction(start, end) {
-    const range = spreadsheet.getCellRange(start, end);
-    return Math.max(...range);
-}
-
-function calcFormula(formula) {
-    let calc, range = [];
+    let calc, range = []
     if (formula.startsWith('=')) {
         calc = formula.split('=').pop().split('(')[0].toUpperCase();
         range = formula.split('(').pop().split(')')[0].split(':');
     }
-
-    switch (calc) {
-        case 'SUM':
-            return sumFormula(range[0], range[1]);
-        case 'AVG':
-        case 'AVERAGE':
-            return avgFunction(range[0], range[1]);
-        case 'MIN':
-            return minFunction(range[0], range[1]);
-        case 'MAX':
-            return maxFunction(range[0], range[1]);
-        default:
-            throw new Error('Unsupported formula');
-    }
 }
-
 
 // function to prompt user if no CLA was given
 function promptForFilePath(question) {
