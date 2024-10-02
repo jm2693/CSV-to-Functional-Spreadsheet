@@ -149,39 +149,53 @@ function readCSV(file) {
 
 class Spreadsheet {
     constructor() {
-        this.data = new Map()
+        this.data = new Map();
     }
-
-    setValue(cell, value) {
-        this.data.set(cell, value);
+    setCellValue(key, value) {
+        this.data.set(key, value);
     }
-
-    getValue(cell) {
-        this.data.get(cell);
+    // if a cell is non-existent assume its value is null
+    getCellValue(key) {
+        return this.data.get(key) || 0;
     }
-
     getCellRange(start, end) {
         // columns get the letter
         // rows get the number
         const startCol = start.charAt(0);
         const endCol = end.charAt(0);
-        const startRow = parseInt(start.charAt(1));
-        const endRow = parseInt(end.charAt(1));
+        const startRow = parseInt(start.slice(1));
+        const endRow = parseInt(end.slice(1));
 
-        let rangedOutput = []
-        
+        const range = [];
+
         // turn letters into unicode to find range
         // acts as 2D array, adding each element to rangedOutput
-        for(let col = startCol.charCodeAt(0); col <= endCol.charCodeAt(0); col++) {
-            for(let row = startRow.charCodeAt(0); row <= endRow.charCodeAt(0); row++) {
-                const cellKey = fromCharCode(col) + row;
-                rangedOutput.push(getCellValue(cellKey));
+        for (let col = startCol.charCodeAt(0); col <= endCol.charCodeAt(0); col++) {
+            for (let row = startRow; row <= endRow; row++) {
+                const cellKey = String.fromCharCode(col) + row;
+                range.push(this.getCellValue(cellKey));
             }
         }
-
-        return rangedOutput;
+        return range;
     }
 }
+
+// function to prompt user if no CLA was given
+function promptForFilePath(question) {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    });
+
+    // outputs the question, before taking the input as a string
+    // splits string to an array of non white-space strings
+    return new Promise(resolve => rl.question(question, filePath => {
+        rl.close();
+        resolve(filePath.trim());
+    }));
+}
+
+
 
 let spreadsheet = new Spreadsheet();
 
@@ -212,21 +226,21 @@ function calcFormula(formula) {
         calc = formula.split('=').pop().split('(')[0].toUpperCase();
         range = formula.split('(').pop().split(')')[0].split(':');
     }
-}
 
-// function to prompt user if no CLA was given
-function promptForFilePath(question) {
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-    });
-
-    // outputs the question, before taking the input as a string
-    // splits string to an array of non white-space strings
-    return new Promise(resolve => rl.question(question, filePath => {
-        rl.close();
-        resolve(filePath.trim());
-    }));
+    switch (calc) {
+        case "SUM":
+            return sumFormula(range[0], range[1])
+        case "AVG":
+        case "AVERAGE":
+            return avgFunction(range[0], range[1])
+        case "MIN":
+            return minFunction(range[0], range[1])
+            break;
+        case "MAX":
+            return maxFunction(range[0], range[1])
+        default:
+            throw new Error('Unsupported Formula!')
+    }
 }
 
 // main function to get the CLAs and run the conversion function
@@ -248,7 +262,8 @@ async function main() {
         console.log('\n');
 
         while (true) {
-            const spreadEquation = await promptForFilePath("Enter Spreadsheet Formula (or 'back' to load a new CSV): ");
+            const input = await promptForFilePath("Enter Spreadsheet Formula (or 'back' to load a new CSV): ");
+            const spreadEquation = input.toUpperCase()
 
             if (spreadEquation.toLowerCase() === 'back') {
                 break;
