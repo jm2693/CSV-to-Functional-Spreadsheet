@@ -189,7 +189,9 @@ function sumFormula(start, end) {
 }
 
 function avgFunction(start, end) {
-
+    const range = spreadsheet.getCellRange(start, end);
+    const sum = sumFormula(start, end);
+    return sum / range.length;
 }
 
 function minFunction(start, end) {
