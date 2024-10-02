@@ -7,62 +7,62 @@ const readline = require('node:readline');
 // 3. parses csv file for true delimiters and true newlines (calls parseCSV)
 // 4. prints a formatted version (table-like) to the node console (calls printFormattedData)
 
-// function printFormattedData(parsedData) {
-//     if (parsedData.length === 0) return;
+function printFormattedData(parsedData) {
+    if (parsedData.length === 0) return;
 
-//     // used as a limiter for table size
-//     // will print an error if table is bigger than certain size
-//     const MAX_ROW_LENGTH = 130; 
-//     const CELL_PADDING = 2; 
-//     const PIPE_CHARS = 2; 
+    // used as a limiter for table size
+    // will print an error if table is bigger than certain size
+    const MAX_ROW_LENGTH = 130; 
+    const CELL_PADDING = 2; 
+    const PIPE_CHARS = 2; 
 
-//     // calculate column widths and check total row length
-//     let columnWidths = [];
-//     let isTooLong = false;
+    // calculate column widths and check total row length
+    let columnWidths = [];
+    let isTooLong = false;
 
-//     parsedData.forEach(row => {
-//         let rowLength = PIPE_CHARS; 
-//         row.forEach((cell, index) => {
-//             const cellStr = String(cell);
-//             columnWidths[index] = Math.max(columnWidths[index] || 0, cellStr.length);
-//             rowLength += cellStr.length + CELL_PADDING;
-//         });
-//         rowLength += (row.length - 1) * 3; // add length for ' | ' between cells
+    parsedData.forEach(row => {
+        let rowLength = PIPE_CHARS; 
+        row.forEach((cell, index) => {
+            const cellStr = String(cell);
+            columnWidths[index] = Math.max(columnWidths[index] || 0, cellStr.length);
+            rowLength += cellStr.length + CELL_PADDING;
+        });
+        rowLength += (row.length - 1) * 3; // add length for ' | ' between cells
 
-//         if (rowLength > MAX_ROW_LENGTH) {
-//             isTooLong = true;
-//         }
-//     });
+        if (rowLength > MAX_ROW_LENGTH) {
+            isTooLong = true;
+        }
+    });
 
-//     if (isTooLong) {
-//         console.log("Warning: CSV file may be too long for proper display!");
-//         return;
-//     }
+    if (isTooLong) {
+        console.log("Warning: CSV file may be too long for proper display!");
+        return;
+    }
 
-//     let paddedData = parsedData.map(row =>
-//         row.map((cell, index) => String(cell).padEnd(columnWidths[index]))
-//     );
+    let paddedData = parsedData.map(row =>
+        row.map((cell, index) => String(cell).padEnd(columnWidths[index]))
+    );
 
-//     const printRow = row => {
-//         let formattedRow = row.join(' | ');
-//         console.log('| ' + formattedRow + ' |');
-//     }
+    const printRow = row => {
+        let formattedRow = row.join(' | ');
+        console.log('| ' + formattedRow + ' |');
+    }
 
-//     // print top border
-//     console.log('+' + columnWidths.map(width => '-'.repeat(width + 2)).join('+') + '+');
+    // print top border
+    console.log('+' + columnWidths.map(width => '-'.repeat(width + 2)).join('+') + '+');
 
-//     // print rows
-//     paddedData.forEach((row, index) => {
-//         printRow(row);
-//         // print separator after header
-//         if (index === 0) {
-//             console.log('+' + columnWidths.map(width => '-'.repeat(width + 2)).join('+') + '+');
-//         }
-//     });
+    // print rows
+    paddedData.forEach((row, index) => {
+        printRow(row);
+        // print separator after header
+        if (index === 0) {
+            console.log('+' + columnWidths.map(width => '-'.repeat(width + 2)).join('+') + '+');
+        }
+    });
 
-//     // print bottom border
-//     console.log('+' + columnWidths.map(width => '-'.repeat(width + 2)).join('+') + '+');
-// }
+    // print bottom border
+    console.log('+' + columnWidths.map(width => '-'.repeat(width + 2)).join('+') + '+');
+}
 
 function parseCSV(data, delimiter, newline) {
     let output = [];
@@ -134,11 +134,148 @@ function readCSV(file) {
             }
 
             let parsedData = parseCSV(data, ',', '\n');
-            // printFormattedData(parsedData);
+            parsedData.forEach((row, rowIndex) => {
+                row.forEach((cell, colIndex) => {
+                    const cellKey = String.fromCharCode(65 + colIndex) + (rowIndex + 1);
+                    spreadsheet.setCellValue(cellKey, parseFloat(cell) || 0);
+                });
+            });
+            
+            printFormattedData(parsedData);
             resolve();
         });
     })
 }
+
+class Spreadsheet {
+    constructor() {
+        this.data = new Map()
+    }
+
+    setValue(cell, value) {
+        this.data.set(cell, value);
+    }
+
+    getValue(cell) {
+        this.data.get(cell);
+    }
+
+    getCellRange(start, end) {
+        // columns get the letter
+        // rows get the number
+        const startCol = start.charAt(0);
+        const endCol = end.charAt(0);
+        const startRow = parseInt(start.charAt(1));
+        const endRow = parseInt(end.charAt(1));
+
+        let rangedOutput = []
+        
+        // turn letters into unicode to find range
+        // acts as 2D array, adding each element to rangedOutput
+        for(let col = startCol.charCodeAt(0); col <= endCol.charCodeAt(0); col++) {
+            for(let row = startRow.charCodeAt(0); row <= endRow.charCodeAt(0); row++) {
+                const cellKey = fromCharCode(col) + row;
+                rangedOutput.push(getCellValue(cellKey));
+            }
+        }
+
+        return rangedOutput;
+    }
+}
+
+function sumFormula(start, end) {
+    for
+}
+
+function avgFunction(start, end) {
+
+}
+
+function minFunction(start, end) {
+
+}
+
+function calcFormula(formula, callback) {
+
+}
+
+class Spreadsheet {
+    constructor() {
+        this.data = new Map();
+    }
+
+    setCellValue(key, value) {
+        this.data.set(key, value);
+    }
+
+    // if a cell is non-existent assume its value is null
+    getCellValue(key) {
+        return this.data.get(key) || 0;
+    }
+
+    getCellRange(start, end) {
+        const startCol = start.charAt(0);
+        const endCol = end.charAt(0);
+        const startRow = parseInt(start.slice(1));
+        const endRow = parseInt(end.slice(1));
+
+        const range = [];
+        for (let col = startCol.charCodeAt(0); col <= endCol.charCodeAt(0); col++) {
+            for (let row = startRow; row <= endRow; row++) {
+                const cellKey = String.fromCharCode(col) + row;
+                range.push(this.getCellValue(cellKey));
+            }
+        }
+        return range;
+    }
+}
+
+// Global spreadsheet instance
+const spreadsheet = new Spreadsheet();
+
+function sumFormula(start, end) {
+    const range = spreadsheet.getCellRange(start, end);
+    return range.reduce((sum, value) => sum + value, null);
+}
+
+function avgFunction(start, end) {
+    const range = spreadsheet.getCellRange(start, end);
+    const sum = sumFormula(start, end);
+    return sum / range.length;
+}
+
+function minFunction(start, end) {
+    const range = spreadsheet.getCellRange(start, end);
+    return Math.min(...range);
+}
+
+function maxFunction(start, end) {
+    const range = spreadsheet.getCellRange(start, end);
+    return Math.max(...range);
+}
+
+function calcFormula(formula) {
+    let calc, range = [];
+    if (formula.startsWith('=')) {
+        calc = formula.split('=').pop().split('(')[0].toUpperCase();
+        range = formula.split('(').pop().split(')')[0].split(':');
+    }
+
+    switch (calc) {
+        case 'SUM':
+            return sumFormula(range[0], range[1]);
+        case 'AVG':
+        case 'AVERAGE':
+            return avgFunction(range[0], range[1]);
+        case 'MIN':
+            return minFunction(range[0], range[1]);
+        case 'MAX':
+            return maxFunction(range[0], range[1]);
+        default:
+            throw new Error('Unsupported formula');
+    }
+}
+
 
 // function to prompt user if no CLA was given
 function promptForFilePath(question) {
@@ -173,13 +310,25 @@ async function main() {
         // blank line for 
         console.log('\n');
 
-        const spreadEquation = await promptForFilePath("Enter Spreadsheet Formula: ");
+        while (true) {
+            const spreadEquation = await promptForFilePath("Enter Spreadsheet Formula (or 'back' to load a new CSV): ");
 
-        if (spreadEquation.toLowerCase() === 'exit') {
-            console.log('Exiting program.');
-            break;
+            if (spreadEquation.toLowerCase() === 'back') {
+                break;
+            }
+
+            if (spreadEquation.toLowerCase() === 'exit') {
+                console.log('Exiting program.');
+                return;
+            }
+
+            try {
+                const result = calcFormula(spreadEquation);
+                console.log(`Result: ${result}`);
+            } catch (error) {
+                console.error(`Error: ${error.message}`);
+            }
         }
-        
     }
 }
 
