@@ -184,7 +184,8 @@ class Spreadsheet {
 }
 
 function sumFormula(start, end) {
-    for
+    const range = spreadsheet.getCellRange(start, end);
+    return range.reduce((sum, value) => sum + value, null);
 }
 
 function avgFunction(start, end) {
