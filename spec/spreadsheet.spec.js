@@ -15,6 +15,14 @@ describe('Spreadsheet Formulas', () => {
         spreadsheet.setCellValue('C1', 'text');
         spreadsheet.setCellValue('C2', null);
     });
+    
+    // what the above spreadsheet looks like:
+    // +----+-----+-------+
+    // | 10 |  5  |  text |
+    // +----+-----+-------+
+    // | 20 |  15 |       |
+    // | 30 |  25 |       |
+    // +----+-----+-------+
 
     describe('SUM Formula', () => {
         it('should correctly sum a range of numbers', () => {
