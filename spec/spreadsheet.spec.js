@@ -55,7 +55,7 @@ describe('Spreadsheet Formulas', () => {
             expect(avgFunction(spreadsheet, 'C1', 'C2')).toBe('Not Applicable');
         });
 
-        it('should correctly calculate the average of a range with some valid numbers', () => {
+        it('should return "Not Applicable" of a range with some invalid numbers', () => {
             expect(avgFunction(spreadsheet, 'A1', 'C2')).toBe('Not Applicable');
         });
     });
