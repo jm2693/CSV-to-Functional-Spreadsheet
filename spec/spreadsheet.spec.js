@@ -15,7 +15,7 @@ describe('Spreadsheet Formulas', () => {
         spreadsheet.setCellValue('C1', 'text');
         spreadsheet.setCellValue('C2', null);
     });
-    
+
     // what the above spreadsheet looks like:
     // +----+-----+-------+
     // | 10 |  5  |  text |
@@ -35,6 +35,10 @@ describe('Spreadsheet Formulas', () => {
 
         it('should correctly sum a range with some valid numbers', () => {
             expect(sumFunction(spreadsheet, 'A1', 'B2')).toBe(50);
+        });
+
+        it('should return not applicable if at least one cell is not numeric', () => {
+            expect(sumFunction(spreadsheet, 'A1', 'C2')).toBe('Not Applicable');
         });
     });
 
