@@ -12,16 +12,16 @@ function printFormattedData(parsedData) {
 
     // used as a limiter for table size
     // will print an error if table is bigger than certain size
-    const MAX_ROW_LENGTH = 130; 
-    const CELL_PADDING = 2; 
-    const PIPE_CHARS = 2; 
+    const MAX_ROW_LENGTH = 130;
+    const CELL_PADDING = 2;
+    const PIPE_CHARS = 2;
 
     // calculate column widths and check total row length
     let columnWidths = [];
     let isTooLong = false;
 
     parsedData.forEach(row => {
-        let rowLength = PIPE_CHARS; 
+        let rowLength = PIPE_CHARS;
         row.forEach((cell, index) => {
             const cellStr = String(cell);
             columnWidths[index] = Math.max(columnWidths[index] || 0, cellStr.length);
@@ -140,7 +140,7 @@ function readCSV(file) {
                     spreadsheet.setCellValue(cellKey, parseFloat(cell) || 0);
                 });
             });
-            
+
             printFormattedData(parsedData);
             resolve();
         });
@@ -266,27 +266,27 @@ async function main() {
         // blank line for 
         console.log('\n');
 
-        
-while (true) {
-    const input = await promptForFilePath("Enter Spreadsheet Formula (or 'back' to load a new CSV): ");
-    const spreadEquation = input.toUpperCase()
 
-    if (spreadEquation.toLowerCase() === 'back') {
-        break;
-    }
+        while (true) {
+            const input = await promptForFilePath("Enter Spreadsheet Formula (or 'back' to load a new CSV): ");
+            const spreadEquation = input.toUpperCase()
 
-    if (spreadEquation.toLowerCase() === 'exit') {
-        console.log('Exiting program.');
-        return;
-    }
+            if (spreadEquation.toLowerCase() === 'back') {
+                break;
+            }
 
-    try {
-        const result = calcFormula(spreadsheet, spreadEquation);
-        console.log(`Result: ${result}`);
-    } catch (error) {
-        console.error(`Error: ${error.message}`);
-    }
-}
+            if (spreadEquation.toLowerCase() === 'exit') {
+                console.log('Exiting program.');
+                return;
+            }
+
+            try {
+                const result = calcFormula(spreadsheet, spreadEquation);
+                console.log(`Result: ${result}`);
+            } catch (error) {
+                console.error(`Error: ${error.message}`);
+            }
+        }
     }
 }
 
