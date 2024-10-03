@@ -37,7 +37,7 @@ describe('Spreadsheet Formulas', () => {
             expect(sumFunction(spreadsheet, 'A1', 'B2')).toBe(50);
         });
 
-        it('should return not applicable if at least one cell is not numeric', () => {
+        it('should return not applicable if at least one cell is not numeric or does not exist', () => {
             expect(sumFunction(spreadsheet, 'C1', 'C3')).toBe('Not Applicable');
         });
     });
