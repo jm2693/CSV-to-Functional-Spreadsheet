@@ -38,7 +38,7 @@ describe('Spreadsheet Formulas', () => {
         });
 
         it('should return not applicable if at least one cell is not numeric', () => {
-            expect(sumFunction(spreadsheet, 'A1', 'C2')).toBe('Not Applicable');
+            expect(sumFunction(spreadsheet, 'C1', 'C3')).toBe('Not Applicable');
         });
     });
 
